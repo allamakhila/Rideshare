@@ -1,21 +1,62 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 function BookingsReceived() {
+
   const [bookings, setBookings] = useState([]);
 
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
   useEffect(() => {
+
     fetchBookings();
+
+    const socket = new SockJS("http://localhost:8081/ws");
+
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+    });
+
+    stompClient.onConnect = () => {
+
+      console.log("Driver connected to WebSocket");
+
+      stompClient.subscribe(
+        `/topic/driver/${loggedInUser.email}`,
+        (message) => {
+
+          const notification = JSON.parse(message.body);
+
+          alert("📢 " + notification.message);
+
+          // refresh bookings automatically
+          fetchBookings();
+
+        }
+      );
+
+    };
+
+    stompClient.activate();
+
+    return () => {
+      stompClient.deactivate();
+    };
+
   }, []);
 
   const fetchBookings = async () => {
     try {
+
       const response = await axios.get(
         `http://localhost:8081/api/bookings/driver/${loggedInUser.email}`
       );
+
       setBookings(response.data);
+
     } catch (error) {
       console.error("Error fetching bookings", error);
     }
@@ -23,10 +64,13 @@ function BookingsReceived() {
 
   const handleAccept = async (id) => {
     try {
+
       await axios.put(
         `http://localhost:8081/api/bookings/confirm/${id}`
       );
+
       fetchBookings();
+
     } catch (error) {
       console.error("Error confirming booking", error);
     }
@@ -34,10 +78,13 @@ function BookingsReceived() {
 
   const handleReject = async (id) => {
     try {
+
       await axios.put(
         `http://localhost:8081/api/bookings/reject/${id}`
       );
+
       fetchBookings();
+
     } catch (error) {
       console.error("Error rejecting booking", error);
     }
@@ -45,11 +92,11 @@ function BookingsReceived() {
 
   const styles = {
     page: {
-      minHeight: "100vh",
-      padding: "40px",
-      background: "linear-gradient(to right, #dbefff, #eaf6ff)",
-      fontFamily: "Arial, sans-serif"
-    },
+  minHeight: "100vh",
+  padding: "40px",
+ background: "linear-gradient(135deg,#c7d2fe,#a5b4fc,#818cf8)",
+  fontFamily: "Segoe UI, sans-serif"
+},
     title: {
       textAlign: "center",
       marginBottom: "30px",
@@ -100,6 +147,7 @@ function BookingsReceived() {
 
   return (
     <div style={styles.page}>
+
       <h2 style={styles.title}>Bookings Received</h2>
 
       {bookings.length === 0 && (
@@ -107,64 +155,70 @@ function BookingsReceived() {
       )}
 
       {bookings.map((booking) => (
-  <div key={booking.id} style={styles.card}>
 
-    <p>
-      <span style={styles.label}>Passenger Name:</span>{" "}
-      {booking.passengerName}
-    </p>
+        <div key={booking.id} style={styles.card}>
 
-    <p>
-      <span style={styles.label}>Passenger Email:</span>{" "}
-      {booking.passengerEmail}
-    </p>
+          <p>
+            <span style={styles.label}>Passenger Name:</span>{" "}
+            {booking.passengerName}
+          </p>
 
-    <p>
-      <span style={styles.label}>Source:</span>{" "}
-      {booking.source}
-    </p>
+          <p>
+            <span style={styles.label}>Passenger Email:</span>{" "}
+            {booking.passengerEmail}
+          </p>
 
-    <p>
-      <span style={styles.label}>Destination:</span>{" "}
-      {booking.destination}
-    </p>
+          <p>
+            <span style={styles.label}>Source:</span>{" "}
+            {booking.ride?.source}
+          </p>
 
-    <p>
-      <span style={styles.label}>Seats Booked:</span>{" "}
-      {booking.seatsBooked}
-    </p>
+          <p>
+            <span style={styles.label}>Destination:</span>{" "}
+            {booking.ride?.destination}
+          </p>
 
-    <p>
-      <span style={styles.label}>Status:</span>{" "}
-      <span style={styles.status(booking.status)}>
-        {booking.status}
-      </span>
-    </p>
+          <p>
+            <span style={styles.label}>Seats Booked:</span>{" "}
+            {booking.seatsBooked}
+          </p>
 
-    <p>
-      <span style={styles.label}>Ride ID:</span>{" "}
-      {booking.ride?.id}
-    </p>
+          <p>
+            <span style={styles.label}>Status:</span>{" "}
+            <span style={styles.status(booking.status)}>
+              {booking.status}
+            </span>
+          </p>
 
-    {booking.status === "PENDING" && (
-      <div style={styles.buttonContainer}>
-        <button
-          style={styles.acceptButton}
-          onClick={() => handleAccept(booking.id)}
-        >
-          Accept
-        </button>
+          <p>
+            <span style={styles.label}>Ride ID:</span>{" "}
+            {booking.ride?.id}
+          </p>
 
-        <button
-          style={styles.rejectButton}
-          onClick={() => handleReject(booking.id)}
-        >
-          Reject
-        </button>
-      </div>
-    )}
-  </div>
-))}
+          {booking.status === "PENDING" && (
+            <div style={styles.buttonContainer}>
+
+              <button
+                style={styles.acceptButton}
+                onClick={() => handleAccept(booking.id)}
+              >
+                Accept
+              </button>
+
+              <button
+                style={styles.rejectButton}
+                onClick={() => handleReject(booking.id)}
+              >
+                Reject
+              </button>
+
+            </div>
+          )}
+
+        </div>
+
+      ))}
+
     </div>
   );
 }

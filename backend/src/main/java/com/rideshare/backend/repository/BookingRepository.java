@@ -10,4 +10,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // ✅ Correct way using relationship
     List<Booking> findByRide_DriverEmail(String driverEmail);
+
+    // ✅ New method to find booking by Razorpay order ID
+    Booking findByOrderId(String orderId);
+
+    List<Booking> findByRideId(Long rideId);
+
 }

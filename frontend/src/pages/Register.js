@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Register() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Register() {
 
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const styles = {
     container: {
@@ -22,56 +24,90 @@ function Register() {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "#b3d9ff",
-      fontFamily: "Arial, sans-serif",
+      background: "linear-gradient(135deg,#667eea,#764ba2)",
+      fontFamily: "Segoe UI, sans-serif",
     },
+
     card: {
-      backgroundColor: "#e6f2ff",
-      padding: "35px",
-      borderRadius: "12px",
+      background: "rgba(255,255,255,0.15)",
+      backdropFilter: "blur(12px)",
+      padding: "40px 35px",
+      borderRadius: "18px",
       width: "400px",
-      boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
-      textAlign: "center",
+      boxShadow: "0 15px 40px rgba(0,0,0,0.2)",
+      display: "flex",
+      flexDirection: "column",
+      gap: "14px",
     },
+
     title: {
-      fontSize: "26px",
+      fontSize: "28px",
       fontWeight: "600",
-      marginBottom: "15px",
-      color: "#333",
+      textAlign: "center",
+      color: "white",
+      marginBottom: "10px",
     },
-    input: {
+
+    inputWrapper: {
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
       width: "100%",
-      padding: "10px",
-      margin: "8px 0",
-      borderRadius: "6px",
-      border: "1px solid #ddd",
     },
+
+    input: {
+  width: "100%",
+  padding: "14px 45px 14px 16px",
+  borderRadius: "12px",
+  border: "1px solid rgba(255,255,255,0.4)",
+  outline: "none",
+  fontSize: "14px",
+  background: "rgba(255,255,255,0.95)",
+  boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
+  transition: "0.3s",
+  boxSizing: "border-box",
+},
+
+    eye: {
+      position: "absolute",
+      right: "15px",
+      cursor: "pointer",
+      color: "#444",
+      fontSize: "16px",
+    },
+
     roleContainer: {
       display: "flex",
-      margin: "10px 0",
+      gap: "10px",
+      marginTop: "5px",
     },
+
     roleBtn: {
       flex: 1,
-      padding: "8px",
-      cursor: "pointer",
-      border: "1px solid #ccc",
-      backgroundColor: "#f0f0f0",
-    },
-    activeRole: {
-      backgroundColor: "#4CAF50",
-      color: "white",
+      padding: "10px",
+      borderRadius: "10px",
       border: "none",
+      cursor: "pointer",
+      background: "rgba(255,255,255,0.8)",
+      fontWeight: "500",
     },
+
+    activeRole: {
+      background: "linear-gradient(90deg,#00c6ff,#0072ff)",
+      color: "white",
+    },
+
     button: {
       width: "100%",
-      padding: "10px",
-      marginTop: "10px",
-      backgroundColor: "#4CAF50",
-      color: "white",
+      padding: "13px",
+      marginTop: "8px",
+      borderRadius: "10px",
       border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
+      background: "linear-gradient(90deg,#00c6ff,#0072ff)",
+      color: "white",
+      fontSize: "15px",
       fontWeight: "600",
+      cursor: "pointer",
     },
   };
 
@@ -79,7 +115,6 @@ function Register() {
     setFormData({ ...formData, [e.target.placeholder]: e.target.value });
   };
 
-  // Step 1: Send OTP
   const handleSendOtp = async () => {
     try {
       await axios.post("http://localhost:8081/api/auth/send-otp", {
@@ -89,17 +124,16 @@ function Register() {
       alert("OTP sent to your email!");
       setOtpSent(true);
     } catch (error) {
-  console.log("Full error:", error);
+      console.log("Full error:", error);
 
-  if (error.response) {
-    alert(error.response.data);
-  } else {
-    alert("Server not reachable");
-  }
-}
+      if (error.response) {
+        alert(error.response.data);
+      } else {
+        alert("Server not reachable");
+      }
+    }
   };
 
-  // Step 2: Verify OTP + Register
   const handleVerifyAndRegister = async () => {
     try {
       await axios.post("http://localhost:8081/api/auth/verify-otp", {
@@ -141,14 +175,23 @@ function Register() {
           }
         />
 
-        <input
-          type="password"
-          style={styles.input}
-          placeholder="password"
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
+        <div style={styles.inputWrapper}>
+          <input
+            type={showPassword ? "text" : "password"}
+            style={styles.input}
+            placeholder="password"
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+
+          <span
+            style={styles.eye}
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
 
         <input
           style={styles.input}
@@ -158,7 +201,6 @@ function Register() {
           }
         />
 
-        {/* Role Selection */}
         <div style={styles.roleContainer}>
           <button
             type="button"

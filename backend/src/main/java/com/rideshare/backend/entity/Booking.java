@@ -1,6 +1,7 @@
 package com.rideshare.backend.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
@@ -44,6 +45,13 @@ public class Booking {
     @Column(name = "status")
     private String status = "PENDING";
 
+    // ✅ NEW FIELD (Real-time updates support)
+    @Column(name = "booking_time")
+    private LocalDateTime bookingTime = LocalDateTime.now();
+
+    @Column(name = "order_id", unique = true)
+    private String orderId;
+
     public Booking() {}
 
     // =========================
@@ -72,4 +80,11 @@ public class Booking {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    // ✅ Getter & Setter for bookingTime
+    public LocalDateTime getBookingTime() { return bookingTime; }
+    public void setBookingTime(LocalDateTime bookingTime) { this.bookingTime = bookingTime; }
+
+    public String getOrderId() { return orderId; }
+    public void setOrderId(String orderId) { this.orderId = orderId; }
 }
