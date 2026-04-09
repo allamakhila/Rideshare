@@ -2,13 +2,17 @@ package com.rideshare.backend.service;
 
 import com.rideshare.backend.entity.Booking;
 import com.rideshare.backend.entity.Ride;
+import com.rideshare.backend.entity.User;
 import com.rideshare.backend.repository.BookingRepository;
 import com.rideshare.backend.repository.RideRepository;
+import com.rideshare.backend.repository.UserRepository;
 import com.rideshare.backend.dto.NotificationMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.List;
 
@@ -22,18 +26,33 @@ public class BookingService {
     private RideRepository rideRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NotificationService notificationService;
 
-    // Real-time update service
     @Autowired
     private BookingUpdateService bookingUpdateService;
 
     @Autowired
     private DistanceService distanceService;
 
-    // WebSocket messaging
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private JavaMailSender mailSender;  // For sending emails
+
+    /**
+     * Utility method to send dynamic email notifications
+     */
+    private void sendEmail(String toEmail, String subject, String body) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);           // Dynamic recipient
+        message.setSubject(subject);
+        message.setText(body);
+        mailSender.send(message);
+    }
 
     /**
      * Books a ride and calculates distance dynamically.
@@ -72,12 +91,35 @@ public class BookingService {
 
         Booking booking = bookingRepository.save(newBooking);
 
-        // Send notification
-        notificationService.sendNotification(
-                "New booking confirmed for ride ID: " + ride.getId()
+        // ===========================
+        // NOTIFICATIONS
+        // ===========================
+
+        // 1️⃣ Database notification
+        User passenger = userRepository.findByEmail(booking.getPassengerEmail())
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
+
+        notificationService.createNotification(
+                passenger,
+                "Your booking for ride from " + ride.getSource() + " to " + ride.getDestination() + " has been confirmed!",
+                "BOOKING_CONFIRMED"
         );
 
-        // Real-time booking update
+        // 2️⃣ Email notification (dynamic recipient)
+        sendEmail(
+                booking.getPassengerEmail(),
+                "Booking Confirmed!",
+                "Hello " + booking.getPassengerName() + ",\n\n" +
+                        "Your booking from " + ride.getSource() + " to " + ride.getDestination() +
+                        " has been confirmed!\n\nThank you for using Smart Ride Sharing System."
+        );
+
+        // 3️⃣ WebSocket notification
+        notificationService.sendNotification(
+                "Booking confirmed for passenger: " + booking.getPassengerName()
+        );
+
+        // 4️⃣ Real-time booking update
         bookingUpdateService.sendBookingUpdate(booking);
 
         return booking;
@@ -92,6 +134,27 @@ public class BookingService {
 
         for (Booking booking : bookings) {
 
+            User passenger = userRepository.findByEmail(booking.getPassengerEmail())
+                    .orElseThrow(() -> new RuntimeException("Passenger not found"));
+
+            // 1️⃣ Database notification
+            notificationService.createNotification(
+                    passenger,
+                    "Your booking from " + booking.getSource() + " to " + booking.getDestination() +
+                            " has been cancelled by the driver.",
+                    "BOOKING_CANCELLED"
+            );
+
+            // 2️⃣ Email notification (dynamic recipient)
+            sendEmail(
+                    booking.getPassengerEmail(),
+                    "Booking Cancelled",
+                    "Hello " + booking.getPassengerName() + ",\n\n" +
+                            "Your booking from " + booking.getSource() + " to " + booking.getDestination() +
+                            " has been rejected by the driver.\n\nPlease check other available rides."
+            );
+
+            // 3️⃣ Existing WebSocket notification
             NotificationMessage message =
                     new NotificationMessage(
                             "REJECTED",
@@ -108,7 +171,7 @@ public class BookingService {
     }
 
     // =============================
-    // REJECT SINGLE BOOKING (optional method if you want per passenger reject)
+    // REJECT SINGLE BOOKING
     // =============================
     public void rejectBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -117,6 +180,27 @@ public class BookingService {
         booking.setStatus("REJECTED");
         bookingRepository.save(booking);
 
+        User passenger = userRepository.findByEmail(booking.getPassengerEmail())
+                .orElseThrow(() -> new RuntimeException("Passenger not found"));
+
+        // 1️⃣ Database notification
+        notificationService.createNotification(
+                passenger,
+                "Your booking from " + booking.getSource() + " to " + booking.getDestination() +
+                        " has been rejected by the driver.",
+                "BOOKING_REJECTED"
+        );
+
+        // 2️⃣ Email notification (dynamic recipient)
+        sendEmail(
+                booking.getPassengerEmail(),
+                "Booking Rejected",
+                "Hello " + booking.getPassengerName() + ",\n\n" +
+                        "Your booking from " + booking.getSource() + " to " + booking.getDestination() +
+                        " has been rejected by the driver.\n\nPlease check other available rides."
+        );
+
+        // 3️⃣ Existing WebSocket notification
         NotificationMessage message = new NotificationMessage(
                 "REJECTED",
                 "❌ Driver rejected your booking"

@@ -42,6 +42,10 @@ public class Booking {
     @Column(name = "seats_booked")
     private int seatsBooked;
 
+    // ✅ ADD THIS
+@Column(name = "total_amount")
+private Double totalAmount;
+
     @Column(name = "status")
     private String status = "PENDING";
 
@@ -51,6 +55,12 @@ public class Booking {
 
     @Column(name = "order_id", unique = true)
     private String orderId;
+
+    @Column(name = "driver_reviewed")
+    private Boolean driverReviewed = false;  // Track if driver has reviewed passenger
+
+    @Column(name = "passenger_reviewed")
+    private Boolean passengerReviewed = false;  // Track if passenger has reviewed driver
 
     public Booking() {}
 
@@ -87,4 +97,18 @@ public class Booking {
 
     public String getOrderId() { return orderId; }
     public void setOrderId(String orderId) { this.orderId = orderId; }
+
+    public Double getTotalAmount() {
+    return totalAmount;
+}
+
+public void setTotalAmount(Double totalAmount) {
+    this.totalAmount = totalAmount;
+}
+
+public Boolean getDriverReviewed() { return driverReviewed; }
+    public void setDriverReviewed(Boolean driverReviewed) { this.driverReviewed = driverReviewed; }
+
+    public Boolean getPassengerReviewed() { return passengerReviewed; }
+    public void setPassengerReviewed(Boolean passengerReviewed) { this.passengerReviewed = passengerReviewed; }
 }

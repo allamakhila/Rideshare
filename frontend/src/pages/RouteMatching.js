@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import RideMap from "../components/RideMap";
+import { FaSearch, FaFilter, FaCar, FaMapMarkerAlt, FaCalendarAlt, FaRupeeSign, FaUser, FaSortAmountDown, FaBookmark, FaCheckCircle } from "react-icons/fa";
 
 function RouteMatching() {
   const navigate = useNavigate();
@@ -108,226 +109,472 @@ function RouteMatching() {
   if (sortOption === "price") filteredRides.sort((a, b) => a.price - b.price);
   if (sortOption === "seats") filteredRides.sort((a, b) => b.availableSeats - a.availableSeats);
 
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+      fontFamily: "'Poppins', 'Segoe UI', sans-serif",
+      padding: "40px 20px",
+    },
+    mainContent: {
+      maxWidth: "1400px",
+      margin: "0 auto",
+    },
+    header: {
+      marginBottom: "30px",
+    },
+    title: {
+      fontSize: "32px",
+      fontWeight: "700",
+      color: "white",
+      marginBottom: "10px",
+      display: "flex",
+      alignItems: "center",
+      gap: "12px",
+    },
+    subtitle: {
+      color: "#94a3b8",
+      fontSize: "14px",
+    },
+    searchCard: {
+      background: "rgba(255,255,255,0.95)",
+      borderRadius: "24px",
+      padding: "28px",
+      marginBottom: "30px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+    },
+    searchForm: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+      gap: "20px",
+      marginBottom: "20px",
+    },
+    inputGroup: {
+      position: "relative",
+    },
+    inputIcon: {
+      position: "absolute",
+      left: "16px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      color: "#3b82f6",
+      fontSize: "16px",
+    },
+    input: {
+      width: "100%",
+      padding: "14px 16px 14px 45px",
+      borderRadius: "14px",
+      border: "2px solid #e2e8f0",
+      background: "white",
+      fontSize: "14px",
+      outline: "none",
+      transition: "all 0.3s",
+      color: "#1e293b",
+      fontWeight: "500",
+      boxSizing: "border-box",
+    },
+    searchButton: {
+      background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+      color: "white",
+      border: "none",
+      borderRadius: "14px",
+      padding: "14px 28px",
+      cursor: "pointer",
+      fontWeight: "600",
+      fontSize: "16px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "8px",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+    },
+    filterSection: {
+      background: "rgba(255,255,255,0.95)",
+      borderRadius: "24px",
+      padding: "20px 28px",
+      marginBottom: "30px",
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "20px",
+      alignItems: "center",
+    },
+    filterTitle: {
+      fontSize: "14px",
+      fontWeight: "600",
+      color: "#1e293b",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+    },
+    filterSelect: {
+      padding: "10px 16px",
+      borderRadius: "12px",
+      border: "2px solid #e2e8f0",
+      background: "white",
+      fontSize: "14px",
+      outline: "none",
+      color: "#1e293b",
+      cursor: "pointer",
+    },
+    filterInput: {
+      padding: "10px 16px",
+      borderRadius: "12px",
+      border: "2px solid #e2e8f0",
+      background: "white",
+      fontSize: "14px",
+      outline: "none",
+      width: "150px",
+    },
+    mapSection: {
+      background: "rgba(255,255,255,0.95)",
+      borderRadius: "24px",
+      padding: "20px",
+      marginBottom: "30px",
+    },
+    mapTitle: {
+      fontSize: "18px",
+      fontWeight: "600",
+      color: "#1e293b",
+      marginBottom: "15px",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+    },
+    resultsSection: {
+      marginTop: "30px",
+    },
+    resultsTitle: {
+      fontSize: "22px",
+      fontWeight: "600",
+      color: "white",
+      marginBottom: "20px",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+    },
+    ridesGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
+      gap: "20px",
+    },
+    rideCard: {
+      background: "white",
+      borderRadius: "20px",
+      padding: "20px",
+      transition: "all 0.3s ease",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+      border: "1px solid #e2e8f0",
+    },
+    rideHeader: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: "15px",
+      paddingBottom: "15px",
+      borderBottom: "2px solid #e2e8f0",
+    },
+    rideRoute: {
+      fontSize: "18px",
+      fontWeight: "600",
+      color: "#1e293b",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      flexWrap: "wrap",
+    },
+    rideStatus: (availableSeats) => ({
+      display: "inline-block",
+      padding: "4px 12px",
+      borderRadius: "20px",
+      fontSize: "12px",
+      fontWeight: "600",
+      background: availableSeats > 0 ? "#dcfce7" : "#fee2e2",
+      color: availableSeats > 0 ? "#166534" : "#991b1b",
+    }),
+    rideDetails: {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gap: "12px",
+      marginBottom: "15px",
+    },
+    detailItem: {
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+    },
+    detailIcon: {
+      color: "#3b82f6",
+      fontSize: "14px",
+      width: "24px",
+    },
+    detailLabel: {
+      fontSize: "12px",
+      color: "#64748b",
+    },
+    detailValue: {
+      fontSize: "14px",
+      fontWeight: "500",
+      color: "#1e293b",
+    },
+    priceHighlight: {
+      fontSize: "20px",
+      fontWeight: "700",
+      color: "#f59e0b",
+    },
+    bookingSection: {
+      marginTop: "15px",
+      paddingTop: "15px",
+      borderTop: "1px solid #e2e8f0",
+      display: "flex",
+      gap: "12px",
+      alignItems: "center",
+      flexWrap: "wrap",
+    },
+    seatInput: {
+      width: "80px",
+      padding: "10px",
+      borderRadius: "12px",
+      border: "2px solid #e2e8f0",
+      fontSize: "14px",
+      textAlign: "center",
+    },
+    bookButton: {
+      background: "linear-gradient(135deg, #10b981, #059669)",
+      color: "white",
+      border: "none",
+      borderRadius: "12px",
+      padding: "10px 20px",
+      cursor: "pointer",
+      fontWeight: "600",
+      fontSize: "14px",
+      display: "flex",
+      alignItems: "center",
+      gap: "8px",
+      transition: "all 0.3s ease",
+    },
+    loadingState: {
+      textAlign: "center",
+      padding: "60px",
+      color: "#94a3b8",
+    },
+    emptyState: {
+      textAlign: "center",
+      padding: "60px",
+      background: "rgba(255,255,255,0.05)",
+      borderRadius: "24px",
+    },
+    emptyIcon: {
+      fontSize: "64px",
+      color: "#475569",
+      marginBottom: "16px",
+    },
+  };
+
   return (
-    <div
-      style={{
-        padding: "30px",
-        fontFamily: "Segoe UI, sans-serif",
-        background: "linear-gradient(135deg,#c7d2fe,#a5b4fc,#c4b5fd)",
-        minHeight: "100vh"
-      }}
-    >
-      <h2>Find Your Ride (Smart Match)</h2>
+    <div style={styles.container}>
+      <div style={styles.mainContent}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>
+            <FaSearch /> Smart Ride Matching
+          </h1>
+          <p style={styles.subtitle}>Find and book rides that match your route</p>
+        </div>
 
-      <form
-        onSubmit={handleSearch}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "14px",
-          maxWidth: "420px",
-          marginBottom: "30px",
-          background: "rgba(255,255,255,0.9)",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 6px 20px rgba(0,0,0,0.1)"
-        }}
-      >
-        <input
-          placeholder="Source"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          required
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff",
-            outline: "none"
-          }}
-        />
+        {/* Search Card */}
+        <div style={styles.searchCard}>
+          <form onSubmit={handleSearch}>
+            <div style={styles.searchForm}>
+              <div style={styles.inputGroup}>
+                <FaMapMarkerAlt style={styles.inputIcon} />
+                <input
+                  style={styles.input}
+                  placeholder="From where?"
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                  required
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <FaMapMarkerAlt style={styles.inputIcon} />
+                <input
+                  style={styles.input}
+                  placeholder="Going to?"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  required
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <FaCalendarAlt style={styles.inputIcon} />
+                <input
+                  type="date"
+                  style={styles.input}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <button type="submit" style={styles.searchButton}>
+              <FaSearch /> Search Rides
+            </button>
+          </form>
+        </div>
 
-        <input
-          placeholder="Destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          required
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff",
-            outline: "none"
-          }}
-        />
-
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff",
-            outline: "none"
-          }}
-        />
-
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            background: "linear-gradient(90deg,#6366f1,#4f46e5)",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "500"
-          }}
-        >
-          Search Ride
-        </button>
-      </form>
-
-      {loading && <p>Loading rides...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <h3>Filters</h3>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "15px",
-          marginBottom: "25px",
-          background: "rgba(255,255,255,0.9)",
-          padding: "15px",
-          borderRadius: "10px",
-          width: "fit-content",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
-        }}
-      >
-        <select
-          value={vehicleFilter}
-          onChange={(e) => setVehicleFilter(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff"
-          }}
-        >
-          <option value="ALL">All Vehicles</option>
-          <option value="CAR">Car</option>
-          <option value="SUV">SUV</option>
-          <option value="BIKE">Bike</option>
-        </select>
-
-        <input
-          type="number"
-          placeholder="Max Price"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff"
-          }}
-        />
-
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #cbd5f5",
-            backgroundColor: "#eef2ff"
-          }}
-        >
-          <option value="">Sort By</option>
-          <option value="price">Cheapest First</option>
-          <option value="seats">Most Seats</option>
-        </select>
-      </div>
-
-      <RideMap rides={filteredRides} />
-
-      <h3>Matched Rides</h3>
-
-      {filteredRides.length === 0 && !loading && <p>No rides found.</p>}
-
-      {filteredRides.map((ride) => (
-        <div
-  key={ride.id}
-  style={{
-    border: "1px solid #c7d2fe",
-    padding: "22px",
-    marginTop: "22px",
-    borderRadius: "14px",
-    background: "linear-gradient(135deg,#eef2ff,#ffffff)",
-    maxWidth: "520px",
-    boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
-    transition: "0.3s"
-  }}
->
-          <h4 style={{color:"#4f46e5", marginBottom:"10px"}}>
-  {ride.source} → {ride.destination}
-</h4>
-
-          <p><strong>Date:</strong> {ride.date}</p>
-          <p><strong>Driver:</strong> {ride.driverEmail}</p>
-          <p><strong>Vehicle:</strong> {ride.vehicleType}</p>
-          <p><strong>License Plate:</strong> {ride.licensePlate}</p>
-          <p style={{color:"#2563eb", fontWeight:"600"}}>
-  Seats Available: {ride.availableSeats}
-</p>
-          <p style={{color:"#16a34a", fontWeight:"600"}}>
-  Price per Seat: ₹{ride.price}
-</p>
-
+        {/* Filters Section */}
+        <div style={styles.filterSection}>
+          <div style={styles.filterTitle}>
+            <FaFilter /> Filters:
+          </div>
+          <select
+            value={vehicleFilter}
+            onChange={(e) => setVehicleFilter(e.target.value)}
+            style={styles.filterSelect}
+          >
+            <option value="ALL">All Vehicles</option>
+            <option value="CAR">Car</option>
+            <option value="SUV">SUV</option>
+            <option value="HatchBack">HatchBack</option>
+            <option value="Sedan">Sedan</option>
+          </select>
           <input
             type="number"
-            min="1"
-            max={ride.availableSeats}
-            value={seatsToBook}
-            onChange={(e) => setSeatsToBook(Number(e.target.value))}
-            style={{
-              padding: "8px",
-              marginTop: "10px",
-              borderRadius: "6px",
-              border: "1px solid #cbd5f5",
-              backgroundColor: "#eef2ff"
-            }}
+            placeholder="Max Price (₹)"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            style={styles.filterInput}
           />
-
-          <p style={{ marginTop: "10px" }}>
-            <strong>Total Fare:</strong> ₹{ride.price * seatsToBook}
-          </p>
-
-          <button
-            onClick={() => handleBookSeat(ride.id)}
-            disabled={ride.availableSeats === 0 || bookingLoading}
-            style={{
-              padding: "10px 16px",
-              background: "linear-gradient(90deg,#22c55e,#16a34a)",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginTop: "10px"
-            }}
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            style={styles.filterSelect}
           >
-            {ride.availableSeats === 0
-              ? "Full"
-              : bookingLoading
-              ? "Booking..."
-              : "Book Ride"}
-          </button>
+            <option value="">Sort By</option>
+            <option value="price">Cheapest First</option>
+            <option value="seats">Most Seats Available</option>
+          </select>
         </div>
-      ))}
+
+        {/* Map Section */}
+        <div style={styles.mapSection}>
+          <div style={styles.mapTitle}>
+            <FaMapMarkerAlt /> Route Map
+          </div>
+          <RideMap rides={filteredRides} />
+        </div>
+
+        {/* Results Section */}
+        <div style={styles.resultsSection}>
+          <div style={styles.resultsTitle}>
+            <FaCar /> Available Rides ({filteredRides.length})
+          </div>
+
+          {loading && (
+            <div style={styles.loadingState}>
+              <div>Searching for rides...</div>
+            </div>
+          )}
+
+          {error && (
+            <div style={{ ...styles.loadingState, color: "#ef4444" }}>
+              {error}
+            </div>
+          )}
+
+          {!loading && filteredRides.length === 0 && !error && (
+            <div style={styles.emptyState}>
+              <div style={styles.emptyIcon}>🚗</div>
+              <p style={{ color: "#94a3b8" }}>No rides found for your search.</p>
+              <p style={{ color: "#64748b", fontSize: "13px", marginTop: "8px" }}>
+                Try different dates or locations
+              </p>
+            </div>
+          )}
+
+          <div style={styles.ridesGrid}>
+            {filteredRides.map((ride) => (
+              <div key={ride.id} style={styles.rideCard}>
+                <div style={styles.rideHeader}>
+                  <div style={styles.rideRoute}>
+                    <FaMapMarkerAlt style={{ color: "#ef4444", fontSize: "12px" }} />
+                    {ride.source}
+                    <span>→</span>
+                    <FaMapMarkerAlt style={{ color: "#10b981", fontSize: "12px" }} />
+                    {ride.destination}
+                  </div>
+                  <div style={styles.rideStatus(ride.availableSeats)}>
+                    {ride.availableSeats} seats left
+                  </div>
+                </div>
+
+                <div style={styles.rideDetails}>
+                  <div style={styles.detailItem}>
+                    <FaCalendarAlt style={styles.detailIcon} />
+                    <div>
+                      <div style={styles.detailLabel}>Date</div>
+                      <div style={styles.detailValue}>{ride.date}</div>
+                    </div>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <FaUser style={styles.detailIcon} />
+                    <div>
+                      <div style={styles.detailLabel}>Driver</div>
+                      <div style={styles.detailValue}>
+                        {ride.driverEmail?.split('@')[0]}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <FaCar style={styles.detailIcon} />
+                    <div>
+                      <div style={styles.detailLabel}>Vehicle</div>
+                      <div style={styles.detailValue}>{ride.vehicleType || "Standard"}</div>
+                    </div>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <FaRupeeSign style={styles.detailIcon} />
+                    <div>
+                      <div style={styles.detailLabel}>Price</div>
+                      <div style={styles.priceHighlight}>₹{ride.price}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={styles.bookingSection}>
+                  <input
+                    type="number"
+                    min="1"
+                    max={ride.availableSeats}
+                    value={seatsToBook}
+                    onChange={(e) => setSeatsToBook(Number(e.target.value))}
+                    style={styles.seatInput}
+                    disabled={ride.availableSeats === 0}
+                  />
+                  <span style={{ fontSize: "14px", color: "#64748b" }}>
+                    Total: ₹{ride.price * seatsToBook}
+                  </span>
+                  <button
+                    onClick={() => handleBookSeat(ride.id)}
+                    disabled={ride.availableSeats === 0 || bookingLoading}
+                    style={styles.bookButton}
+                  >
+                    {ride.availableSeats === 0 ? (
+                      "Full"
+                    ) : bookingLoading ? (
+                      "Booking..."
+                    ) : (
+                      <>
+                        <FaBookmark /> Book Now
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

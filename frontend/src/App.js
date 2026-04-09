@@ -10,6 +10,10 @@ import Register from "./pages/Register";
 import DriverDashboard from "./pages/DriverDashboard";
 import PassengerDashboard from "./pages/PassengerDashboard";
 
+// ✅ Admin Pages - ADD THESE IMPORTS
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+
 // ✅ Existing Pages
 import PostRide from "./pages/PostRide";
 import BookingsReceived from "./pages/BookingsReceived";
@@ -22,6 +26,8 @@ import TransactionHistory from "./pages/TransactionHistory";
 // ✅ Route Matching Page
 import RouteMatching from "./pages/RouteMatching";
 
+import Profile from "./pages/Profile";
+
 function App() {
   return (
     <Router>
@@ -33,6 +39,11 @@ function App() {
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* ✅ ADMIN ROUTES - ADD THESE TWO LINES */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
 
         {/* Dashboards */}
         <Route path="/driver" element={<DriverDashboard />} />
@@ -51,6 +62,8 @@ function App() {
 
         {/* Smart Route Matching */}
         <Route path="/route-matching" element={<RouteMatching />} />
+
+        <Route path="/profile" element={<Profile />} />
 
       </Routes>
     </Router>

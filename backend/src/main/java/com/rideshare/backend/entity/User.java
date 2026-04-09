@@ -1,6 +1,7 @@
 package com.rideshare.backend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -15,6 +16,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @JsonIgnore 
     private String password;
 
     private String phone;
@@ -25,6 +27,13 @@ public class User {
     private String vehicleModel;
     private String licensePlate;
     private Integer capacity;
+
+// ✅ ADD HERE
+private boolean isBlocked = false;
+
+    // ⭐ NEW FIELD (NOT stored in DB)
+    @Transient
+    private Double averageRating;
 
     public User() {}
 
@@ -95,4 +104,21 @@ public class User {
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
+    // ⭐ Getter
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    // ⭐ Setter
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+    
+    public boolean isBlocked() {
+    return isBlocked;
+}
+
+public void setBlocked(boolean blocked) {
+    isBlocked = blocked;
+}
 }
