@@ -1,14 +1,13 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8081/api",
+  baseURL: "https://rideshare-backend.onrender.com/api",
 });
 
 export default API;
 
-// Milestone 2 - Dynamic Fare Calculation
 export const calculateFare = (data) => {
-  return axios.get("http://localhost:8081/fare/calculate", {
+  return axios.get("https://rideshare-backend.onrender.com/fare/calculate", {
     params: {
       pickupLat: data.pickupLat,
       pickupLng: data.pickupLng,
