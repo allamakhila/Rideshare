@@ -28,8 +28,8 @@ public class User {
     private String licensePlate;
     private Integer capacity;
 
-// ✅ ADD HERE
-private boolean isBlocked = false;
+    // ✅ ADD HERE
+    private boolean isBlocked = false;
 
     // ⭐ NEW FIELD (NOT stored in DB)
     @Transient
@@ -104,6 +104,7 @@ private boolean isBlocked = false;
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
+
     // ⭐ Getter
     public Double getAverageRating() {
         return averageRating;
@@ -113,12 +114,12 @@ private boolean isBlocked = false;
     public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
     }
-    
-    public boolean isBlocked() {
-    return isBlocked;
-}
 
-public void setBlocked(boolean blocked) {
-    isBlocked = blocked;
-}
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
 }
