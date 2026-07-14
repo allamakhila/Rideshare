@@ -252,13 +252,20 @@ function Register() {
       alert("OTP sent to your email!");
       setOtpSent(true);
     } catch (error) {
-      console.log("Full error:", error);
-      if (error.response) {
-        alert(error.response.data);
-      } else {
-        alert("Server not reachable");
-      }
-    } finally {
+  console.log("Full error:", error);
+
+  if (error.response) {
+    console.log(error.response.data);
+
+    if (typeof error.response.data === "string") {
+      alert(error.response.data);
+    } else {
+      alert(JSON.stringify(error.response.data, null, 2));
+    }
+  } else {
+    alert(error.message);
+  }
+} finally {
       setIsLoading(false);
     }
   };
@@ -316,7 +323,11 @@ function Register() {
             <div style={styles.inputWrapper}>
               <field.icon style={styles.inputIcon} />
               <input
-                type={field.type === "password" && !field.showToggle ? "password" : field.type}
+                type={
+                field.type === "password"
+                  ? (showPassword ? "text" : "password")
+                  : field.type
+                }
                 name={field.name}
                 placeholder={field.placeholder}
                 style={{
