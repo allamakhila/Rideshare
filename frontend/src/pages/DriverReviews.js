@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '../api';
+import API from '../services/api'
 import { FaStar, FaUser, FaCar, FaCalendarAlt, FaTimes, FaSync, FaThumbsUp, FaComment, FaUserCircle } from 'react-icons/fa';
 
 function DriverReviews({ driverId, driverName, onClose, initialTab = "received", setReviewTab }) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import API from '../api';
+import API from '../services/api'
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { FaPaperPlane, FaTimes, FaUserCircle, FaCar } from 'react-icons/fa';

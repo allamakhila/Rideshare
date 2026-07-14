@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '../api';
+import API from '../services/api'
 import { FaStar, FaUser, FaCar, FaCalendarAlt, FaTimes, FaSync, FaThumbsUp, FaComment } from 'react-icons/fa';
 
 function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "received", setReviewTab }) {
