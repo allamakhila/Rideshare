@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import API, { calculateFare } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import { calculateFare } from "../services/api";
 
 function SearchRide() {
 
