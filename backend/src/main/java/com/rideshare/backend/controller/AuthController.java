@@ -58,8 +58,9 @@ public class AuthController {
 
     // ===== Send OTP =====
     @PostMapping("/send-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
+public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
 
+    try {
         String email = request.getEmail();
 
         if (authService.userExists(email)) {
@@ -77,7 +78,12 @@ public class AuthController {
         mailSender.send(message);
 
         return ResponseEntity.ok("OTP sent successfully");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.internalServerError().body(e.toString());
     }
+}
 
     // ===== Verify OTP =====
     @PostMapping("/verify-otp")
