@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 function AdminDashboard() {
@@ -110,10 +110,10 @@ useEffect(() => {
     
     // Fetch all data in parallel
     const [statsRes, usersRes, ridesRes, bookingsRes] = await Promise.all([
-      axios.get('http://localhost:8081/api/admin/stats', config).catch(err => ({ data: {} })),
-      axios.get('http://localhost:8081/api/admin/users', config).catch(err => ({ data: [] })),
-      axios.get('http://localhost:8081/api/admin/rides', config).catch(err => ({ data: [] })),
-      axios.get('http://localhost:8081/api/admin/bookings', config).catch(err => ({ data: [] }))
+      API.get('/admin/stats', config).catch(err => ({ data: [] })),
+      API.get('/admin/users', config).catch(err => ({ data: [] })),
+      API.get('/admin/rides', config).catch(err => ({ data: [] })),
+      API.get('/admin/bookings', config).catch(err => ({ data: [] }))
     ]);
     
     const bookingsData = bookingsRes.data || [];
@@ -185,7 +185,7 @@ const fetchChartData = async () => {
   try {
     const token = localStorage.getItem('adminToken');
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const response = await axios.get('http://localhost:8081/api/admin/chart-data', config);
+    const response = await API.get('/admin/chart-data', config);
     setChartData(response.data);
   } catch (error) {
     console.error('Error fetching chart data:', error);
@@ -208,7 +208,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      const response = await axios.get('http://localhost:8081/api/admin/users', {
+      const response = await API.get('/admin/users', {
         params: userFilters,
         ...config
       });
@@ -223,7 +223,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      const response = await axios.get('http://localhost:8081/api/admin/rides', {
+      const response = await API.get('/admin/rides', {
         params: rideFilters,
         ...config
       });
@@ -238,7 +238,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      const response = await axios.get('http://localhost:8081/api/admin/bookings', {
+      const response = await API.get('/admin/bookings', {
         params: bookingFilters,
         ...config
       });
@@ -254,7 +254,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      await axios.put(`http://localhost:8081/api/admin/users/${userId}/verify`, {}, config);
+      await API.put(`/admin/users/${userId}/verify`, {}, config);
       alert('User verified successfully');
       fetchAllDashboardData();
     } catch (error) {
@@ -268,7 +268,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      await axios.put(`http://localhost:8081/api/admin/users/${userId}/block`, {}, config);
+      await API.put(`/admin/users/${userId}/block`, {}, config);
       alert('User blocked successfully');
       fetchAllDashboardData();
     } catch (error) {
@@ -282,7 +282,7 @@ const fetchChartData = async () => {
       const token = localStorage.getItem('adminToken');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
-      await axios.put(`http://localhost:8081/api/admin/users/${userId}/unblock`, {}, config);
+      await API.put(`/admin/users/${userId}/unblock`, {}, config);
       alert('User unblocked successfully');
       fetchAllDashboardData();
     } catch (error) {
@@ -888,7 +888,7 @@ const fetchChartData = async () => {
       const config = { headers: { Authorization: `Bearer ${token}` } };
       
       // You can add your API endpoint here
-      // await axios.post('http://localhost:8081/api/admin/settings', settings, config);
+      // await API.post('/admin/settings', settings, config);
       alert('Settings saved (demo mode)');
     } catch (error) {
       console.error('Error saving settings:', error);

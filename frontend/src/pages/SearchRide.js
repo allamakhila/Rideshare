@@ -33,7 +33,7 @@ function SearchRide() {
     try {
 
       const response = await axios.get(
-        "http://localhost:8081/api/rides/all"
+        "https://smart-rideshare-backend.onrender.com/api/rides/all"
       );
 
       setRides(response.data);
@@ -72,7 +72,7 @@ function SearchRide() {
     try {
 
       const response = await axios.post(
-        `http://localhost:8081/api/payment/create-order?amount=${amount}`
+        `https://smart-rideshare-backend.onrender.com/api/payment/create-order?amount=${amount}`
       );
 
       console.log("Order Created:", response.data);

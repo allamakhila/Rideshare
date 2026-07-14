@@ -50,7 +50,7 @@ function PostRide() {
       }
 
       await axios.post(
-        "http://localhost:8081/api/rides",
+        "https://smart-rideshare-backend.onrender.com/api/rides",
         {
           ...ride,
           availableSeats: Number(ride.availableSeats),

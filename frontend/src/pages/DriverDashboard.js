@@ -48,7 +48,7 @@ function DriverDashboard() {
     setLoadingRating(true);
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/reviews/user/${loggedInUser.id}/average`
+        `https://smart-rideshare-backend.onrender.com/api/reviews/user/${loggedInUser.id}/average`
       );
       setAverageRating(response.data);
     } catch (error) {
@@ -62,7 +62,7 @@ function DriverDashboard() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:8081/api/chat/unread/${loggedInUser.id}`,
+        `https://smart-rideshare-backend.onrender.com/api/chat/unread/${loggedInUser.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUnreadCount(response.data.count);
@@ -77,7 +77,7 @@ function DriverDashboard() {
     
     console.log('Setting up WebSocket for driver:', loggedInUser.id);
     
-    const socket = new SockJS('http://localhost:8081/ws');
+    const socket = new SockJS("https://smart-rideshare-backend.onrender.com/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

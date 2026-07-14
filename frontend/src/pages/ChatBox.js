@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import API from '../api';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import { FaPaperPlane, FaTimes, FaUserCircle, FaCar } from 'react-icons/fa';
@@ -26,14 +26,14 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:8081/api/chat/history/${booking.id}`,
+        `https://smart-rideshare-backend.onrender.com/api/chat/history/${booking.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessages(response.data);
       
       // Mark messages as read
       await axios.put(
-        `http://localhost:8081/api/chat/read/${booking.id}?userId=${currentUser.id}`,
+        `https://smart-rideshare-backend.onrender.com/api/chat/read/${booking.id}?userId=${currentUser.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -46,7 +46,7 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
   useEffect(() => {
     fetchChatHistory();
 
-    const socket = new SockJS('http://localhost:8081/ws');
+    const socket = new SockJS('https://smart-rideshare-backend.onrender.com/ws');
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -89,7 +89,7 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:8081/api/chat/read/${booking.id}?userId=${currentUser.id}`,
+        `https://smart-rideshare-backend.onrender.com/api/chat/read/${booking.id}?userId=${currentUser.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -123,7 +123,7 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
       } else {
         // Fallback to REST API
         const token = localStorage.getItem('token');
-        await axios.post('http://localhost:8081/api/chat/send', message, {
+        await axios.post('https://smart-rideshare-backend.onrender.com/api/chat/send', message, {
           headers: { Authorization: `Bearer ${token}` }
         });
         await fetchChatHistory();

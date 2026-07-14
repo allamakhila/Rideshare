@@ -130,7 +130,7 @@ function AdminLogin() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8081/api/auth/login", // Same endpoint but will check role
+        "https://smart-rideshare-backend.onrender.com/api/auth/login", // Same endpoint but will check role
         { email, password }
       );
 

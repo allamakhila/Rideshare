@@ -20,7 +20,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const fetchBookings = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/bookings/driver/${loggedInUser.email}`
+        `https://smart-rideshare-backend.onrender.com/api/bookings/driver/${loggedInUser.email}`
       );
       setBookings(response.data);
     } catch (error) {
@@ -37,7 +37,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleAccept = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8081/api/bookings/confirm/${id}`);
+      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/confirm/${id}`);
       fetchBookings();
       alert("Booking accepted!");
     } catch (error) {
@@ -51,7 +51,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleReject = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8081/api/bookings/reject/${id}`);
+      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/reject/${id}`);
       fetchBookings();
       alert("Booking rejected");
     } catch (error) {
@@ -65,7 +65,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleStartRide = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8081/api/bookings/start/${id}`);
+      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/start/${id}`);
       alert("Ride started! Safe journey!");
       fetchBookings();
     } catch (error) {
@@ -79,7 +79,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleCompleteRide = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8081/api/bookings/complete/${id}`);
+      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/complete/${id}`);
       alert("Ride completed! Thank you for your service!");
       fetchBookings();
     } catch (error) {
@@ -109,7 +109,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
     setLoading(true);
     try {
       const passengerResponse = await axios.get(
-        `http://localhost:8081/api/users/email/${selectedBooking.passengerEmail}`
+        `https://smart-rideshare-backend.onrender.com/api/users/email/${selectedBooking.passengerEmail}`
       );
       
       const passenger = passengerResponse.data;
@@ -123,7 +123,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
         comments: comment || ""
       };
 
-      await axios.post("http://localhost:8081/api/reviews/create", payload);
+      await axios.post("https://smart-rideshare-backend.onrender.com/api/reviews/create", payload);
 
       alert("Review submitted successfully!");
       setShowReviewModal(false);

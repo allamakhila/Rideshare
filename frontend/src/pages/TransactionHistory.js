@@ -261,9 +261,9 @@ function TransactionHistory() {
       let url = "";
 
       if (loggedInUser.role === "PASSENGER") {
-        url = `http://localhost:8081/api/payment/history/passenger/${loggedInUser.email}`;
+        url = `https://smart-rideshare-backend.onrender.com/api/payment/history/passenger/${loggedInUser.email}`;
       } else if (loggedInUser.role === "DRIVER") {
-        url = `http://localhost:8081/api/payment/history/driver/${loggedInUser.email}`;
+        url = `https://smart-rideshare-backend.onrender.com/api/payment/history/driver/${loggedInUser.email}`;
       }
 
       const response = await axios.get(url);

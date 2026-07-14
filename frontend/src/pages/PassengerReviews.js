@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../api';
 import { FaStar, FaUser, FaCar, FaCalendarAlt, FaTimes, FaSync, FaThumbsUp, FaComment } from 'react-icons/fa';
 
 function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "received", setReviewTab }) {
@@ -23,7 +23,7 @@ function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "r
 
       try {
         const summaryRes = await axios.get(
-          `http://localhost:8081/api/reviews/user/${passengerId}/summary`
+          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/summary`
         );
         setSummary(summaryRes.data);
       } catch (err) {
@@ -32,7 +32,7 @@ function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "r
 
       try {
         const receivedRes = await axios.get(
-          `http://localhost:8081/api/reviews/user/${passengerId}/details`
+          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/details`
         );
         setReceivedReviews(receivedRes.data);
       } catch (err) {
@@ -41,7 +41,7 @@ function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "r
 
       try {
         const givenRes = await axios.get(
-          `http://localhost:8081/api/reviews/user/${passengerId}/given`
+          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/given`
         );
         setGivenReviews(givenRes.data);
       } catch (err) {

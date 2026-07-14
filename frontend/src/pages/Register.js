@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock, FaPhone, FaCar, FaUserFriends } from "react-icons/fa";
 
 function Register() {
@@ -245,7 +245,7 @@ function Register() {
     
     setIsLoading(true);
     try {
-      await axios.post("http://localhost:8081/api/auth/send-otp", {
+      await API.post("/auth/send-otp", {
         email: formData.email,
       });
 
@@ -271,12 +271,12 @@ function Register() {
     
     setIsLoading(true);
     try {
-      await axios.post("http://localhost:8081/api/auth/verify-otp", {
+      await API.post("/auth/verify-otp", {
         email: formData.email,
         otp: otp,
       });
 
-      await axios.post("http://localhost:8081/api/auth/register", {
+      await API.post("/auth/register", {
         ...formData,
         role: role,
       });

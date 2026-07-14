@@ -13,7 +13,7 @@ function MyBookings() {
 
     try {
       const response = await axios.get(
-        `http://localhost:8081/api/bookings/passenger`,
+        `https://smart-rideshare-backend.onrender.com/api/bookings/passenger`,
         { params: { email: loggedInUser.email } }
       );
       setBookings(response.data.reverse()); // newest first
@@ -41,7 +41,7 @@ function MyBookings() {
       alert("Preparing payment...");
 
       const orderResponse = await axios.post(
-        `http://localhost:8081/api/payment/create-order?amount=${totalFare}`
+        `https://smart-rideshare-backend.onrender.com/api/payment/create-order?amount=${totalFare}`
       );
 
       const order = orderResponse.data;
@@ -55,7 +55,7 @@ function MyBookings() {
         order_id: order.id,
         handler: async (response) => {
           try {
-            await axios.post("http://localhost:8081/api/payment/verify", {
+            await axios.post("https://smart-rideshare-backend.onrender.com/api/payment/verify", {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,

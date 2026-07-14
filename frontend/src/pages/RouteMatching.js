@@ -23,7 +23,7 @@ function RouteMatching() {
   const [sortOption, setSortOption] = useState("");
 
   useEffect(() => {
-    const socket = new SockJS("http://localhost:8081/ws");
+    const socket = new SockJS("https://smart-rideshare-backend.onrender.com/ws");
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000
@@ -70,7 +70,7 @@ function RouteMatching() {
 
     try {
       const response = await axios.get(
-        "http://localhost:8081/api/rides/search",
+        "https://smart-rideshare-backend.onrender.com/api/rides/search",
         { params: { source, destination, date } }
       );
       setMatches(response.data);
@@ -87,7 +87,7 @@ function RouteMatching() {
       setBookingLoading(true);
       const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-      await axios.post(`http://localhost:8081/api/bookings/book/${rideId}`, {
+      await axios.post(`https://smart-rideshare-backend.onrender.com/api/bookings/book/${rideId}`, {
         passengerEmail: loggedInUser.email,
         passengerName: loggedInUser.name,
         seatsBooked: seatsToBook
