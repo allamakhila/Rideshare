@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
@@ -69,7 +69,7 @@ function RouteMatching() {
     setError("");
 
     try {
-      const response = await axios.get(
+      const response = await API.get(
         "https://smart-rideshare-backend.onrender.com/api/rides/search",
         { params: { source, destination, date } }
       );
@@ -87,7 +87,7 @@ function RouteMatching() {
       setBookingLoading(true);
       const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-      await axios.post(`https://smart-rideshare-backend.onrender.com/api/bookings/book/${rideId}`, {
+      await API.post(`https://smart-rideshare-backend.onrender.com/api/bookings/book/${rideId}`, {
         passengerEmail: loggedInUser.email,
         passengerName: loggedInUser.name,
         seatsBooked: seatsToBook

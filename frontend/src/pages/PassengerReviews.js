@@ -22,27 +22,21 @@ function PassengerReviews({ passengerId, passengerName, onClose, initialTab = "r
       setError('');
 
       try {
-        const summaryRes = await axios.get(
-          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/summary`
-        );
+        const summaryRes = await API.get(`/reviews/user/${passengerId}/summary`);
         setSummary(summaryRes.data);
       } catch (err) {
         console.error('Summary fetch error:', err);
       }
 
       try {
-        const receivedRes = await axios.get(
-          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/details`
-        );
+        const receivedRes = await API.get(`/reviews/user/${passengerId}/details`);
         setReceivedReviews(receivedRes.data);
       } catch (err) {
         console.error('Received reviews fetch error:', err);
       }
 
       try {
-        const givenRes = await axios.get(
-          `https://smart-rideshare-backend.onrender.com/api/reviews/user/${passengerId}/given`
-        );
+        const givenRes = await API.get(`/reviews/user/${passengerId}/given`);
         setGivenReviews(givenRes.data);
       } catch (err) {
         console.error('Given reviews fetch error:', err);

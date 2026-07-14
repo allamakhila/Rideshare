@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; 
-import axios from "axios";
+import API from "../services/api";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import PassengerReviews from "./PassengerReviews";
@@ -54,9 +54,9 @@ function PassengerDashboard() {
     
     setLoadingRating(true);
     try {
-      const response = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/reviews/user/${loggedInUser.id}/average`
-      );
+      const response = await API.get(
+`/reviews/user/${loggedInUser.id}/average`
+);
       setAverageRating(response.data);
     } catch (error) {
       console.error("Error fetching rating:", error);
@@ -68,8 +68,8 @@ function PassengerDashboard() {
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/chat/unread/${loggedInUser.id}`,
+      const response = await API.get(
+`/chat/unread/${loggedInUser.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUnreadCount(response.data.count);
@@ -333,7 +333,8 @@ function PassengerDashboard() {
       const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
       if (!loggedInUser) return;
 
-      const response = await axios.get("https://smart-rideshare-backend.onrender.com/api/bookings/passenger", { 
+      const response = await API.get(
+"/bookings/passenger", { 
         params: { email: loggedInUser.email } 
       });
       setMyBookings([...response.data].reverse());
@@ -467,7 +468,8 @@ useEffect(() => {
     }
 
     try {
-      const response = await axios.get("https://smart-rideshare-backend.onrender.com/api/rides/search", { 
+      const response = await API.get(
+"/rides/search", { 
         params: { source: source.trim(), destination: destination.trim(), date } 
       });
       setRides(response.data);
@@ -484,7 +486,8 @@ useEffect(() => {
 
     try {
       const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-      await axios.post(`https://smart-rideshare-backend.onrender.com/api/bookings/book/${ride.id}`, {
+      await API.post(
+`/bookings/book/${ride.id}`, {
         passengerEmail: loggedInUser.email,
         passengerName: loggedInUser.name,
         seatsBooked: seatsToBook
@@ -507,7 +510,9 @@ useEffect(() => {
 
     try {
       alert("Preparing payment...");
-      const orderResponse = await axios.post(`https://smart-rideshare-backend.onrender.com/api/payment/create-order?amount=${totalFare}`);
+      const orderResponse = await API.post(
+`/payment/create-order?amount=${totalFare}`
+);
       const order = orderResponse.data;
 
       const options = {
@@ -519,7 +524,8 @@ useEffect(() => {
         order_id: order.id,
         handler: async (response) => {
           try {
-            await axios.post("https://smart-rideshare-backend.onrender.com/api/payment/verify", {
+            await API.post(
+"/payment/verify", {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
@@ -548,7 +554,9 @@ useEffect(() => {
 
   const handleCancelBooking = async (id) => {
     try {
-      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/cancel/${id}`);
+      await API.put(
+`/bookings/cancel/${id}`
+);
       alert("Booking cancelled");
       fetchBookings();
     } catch (error) {
@@ -587,9 +595,9 @@ useEffect(() => {
     }
 
     try {
-      const driverResponse = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/users/email/${selectedBooking.ride.driverEmail}`
-      );
+      const driverResponse = await API.get(
+`/users/email/${selectedBooking.ride.driverEmail}`
+);
 
       const driver = driverResponse.data;
       
@@ -607,7 +615,10 @@ useEffect(() => {
         comments: comment || ""
       };
 
-      await axios.post("https://smart-rideshare-backend.onrender.com/api/reviews/create", payload);
+      await API.post(
+"/reviews/create",
+payload
+);
 
       alert("Review submitted successfully!");
       setShowReviewModal(false);
@@ -615,7 +626,8 @@ useEffect(() => {
       setComment("");
       setSelectedBooking(null);
       
-      const response = await axios.get("https://smart-rideshare-backend.onrender.com/api/bookings/passenger", { 
+      const response = await API.get(
+"/bookings/passenger", { 
         params: { email: loggedInUser.email } 
       });
       

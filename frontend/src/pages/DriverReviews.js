@@ -22,7 +22,7 @@ function DriverReviews({ driverId, driverName, onClose, initialTab = "received",
       setError('');
 
       try {
-        const summaryRes = await axios.get(
+        const summaryRes = await API.get(
           `https://smart-rideshare-backend.onrender.com/api/reviews/user/${driverId}/summary`
         );
         setSummary(summaryRes.data);
@@ -31,7 +31,7 @@ function DriverReviews({ driverId, driverName, onClose, initialTab = "received",
       }
 
       try {
-        const receivedRes = await axios.get(
+        const receivedRes = await API.get(
           `https://smart-rideshare-backend.onrender.com/api/reviews/user/${driverId}/details`
         );
         setReceivedReviews(receivedRes.data);
@@ -40,7 +40,7 @@ function DriverReviews({ driverId, driverName, onClose, initialTab = "received",
       }
 
       try {
-        const givenRes = await axios.get(
+        const givenRes = await API.get(
           `https://smart-rideshare-backend.onrender.com/api/reviews/user/${driverId}/given`
         );
         setGivenReviews(givenRes.data);

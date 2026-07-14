@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import { FaCar, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaRupeeSign, FaTachometerAlt, FaIdCard, FaArrowLeft, FaPlusCircle } from "react-icons/fa";
 
 function PostRide() {
@@ -23,7 +23,7 @@ function PostRide() {
   };
 
   const getCoordinates = async (place) => {
-    const res = await axios.get(
+    const res = await API.get(
       `https://nominatim.openstreetmap.org/search?format=json&q=${place}`
     );
     if (res.data.length > 0) {
@@ -49,7 +49,7 @@ function PostRide() {
         return;
       }
 
-      await axios.post(
+      await API.post(
         "https://smart-rideshare-backend.onrender.com/api/rides",
         {
           ...ride,

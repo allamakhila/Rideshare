@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import { FaEye, FaEyeSlash, FaCar, FaEnvelope, FaLock } from "react-icons/fa";
 
 function Login() {
@@ -224,10 +224,10 @@ function Login() {
     setIsLoading(true);
     
     try {
-      const response = await axios.post(
-        "https://smart-rideshare-backend.onrender.com/api/auth/login",
-        { email, password }
-      );
+      const response = await API.post(
+  "/auth/login",
+  { email, password }
+);
 
       const { token, role, name, id } = response.data;
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -12,8 +12,8 @@ function MyBookings() {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/bookings/passenger`,
+      const response = await API.get(
+        `/bookings/passenger`,
         { params: { email: loggedInUser.email } }
       );
       setBookings(response.data.reverse()); // newest first
@@ -40,9 +40,9 @@ function MyBookings() {
     try {
       alert("Preparing payment...");
 
-      const orderResponse = await axios.post(
-        `https://smart-rideshare-backend.onrender.com/api/payment/create-order?amount=${totalFare}`
-      );
+      const orderResponse = await API.post(
+`/payment/create-order?amount=${totalFare}`
+);
 
       const order = orderResponse.data;
 
@@ -55,7 +55,8 @@ function MyBookings() {
         order_id: order.id,
         handler: async (response) => {
           try {
-            await axios.post("https://smart-rideshare-backend.onrender.com/api/payment/verify", {
+            await API.post(
+"/payment/verify", {
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,

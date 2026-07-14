@@ -7,7 +7,7 @@ const API = axios.create({
 export default API;
 
 export const calculateFare = (data) => {
-  return axios.get("https://smart-rideshare-backend.onrender.com/fare/calculate", {
+  return API.get("https://smart-rideshare-backend.onrender.com/fare/calculate", {
     params: {
       pickupLat: data.pickupLat,
       pickupLng: data.pickupLng,

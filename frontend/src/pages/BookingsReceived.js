@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 import { FaCheck, FaTimes, FaPlay, FaFlagCheckered, FaStar, FaUser, FaEnvelope, FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaCar, FaIdCard, FaComment } from "react-icons/fa";
 import ReactDOM from "react-dom";
 
@@ -11,7 +11,8 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  const loggedInUser =
+  JSON.parse(localStorage.getItem("loggedInUser")) || {};
 
   useEffect(() => {
     fetchBookings();
@@ -19,9 +20,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
 
   const fetchBookings = async () => {
     try {
-      const response = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/bookings/driver/${loggedInUser.email}`
-      );
+      const response = await API.get(`/bookings/driver/${loggedInUser.email}`);
       setBookings(response.data);
     } catch (error) {
       console.error("Error fetching bookings", error);
@@ -37,8 +36,8 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleAccept = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/confirm/${id}`);
-      fetchBookings();
+      await API.put(`/bookings/confirm/${id}`);
+      await fetchBookings();
       alert("Booking accepted!");
     } catch (error) {
       console.error("Error confirming booking", error);
@@ -51,8 +50,8 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleReject = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/reject/${id}`);
-      fetchBookings();
+      await API.put(`/bookings/reject/${id}`);
+      await fetchBookings();
       alert("Booking rejected");
     } catch (error) {
       console.error("Error rejecting booking", error);
@@ -65,7 +64,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleStartRide = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/start/${id}`);
+      await API.put(`/bookings/start/${id}`);
       alert("Ride started! Safe journey!");
       fetchBookings();
     } catch (error) {
@@ -79,7 +78,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
   const handleCompleteRide = async (id) => {
     setLoading(true);
     try {
-      await axios.put(`https://smart-rideshare-backend.onrender.com/api/bookings/complete/${id}`);
+      await API.put(`/bookings/complete/${id}`);
       alert("Ride completed! Thank you for your service!");
       fetchBookings();
     } catch (error) {
@@ -108,9 +107,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
 
     setLoading(true);
     try {
-      const passengerResponse = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/users/email/${selectedBooking.passengerEmail}`
-      );
+      const passengerResponse = await API.get(`/users/email/${selectedBooking.passengerEmail}`);
       
       const passenger = passengerResponse.data;
 
@@ -123,7 +120,7 @@ function BookingsReceived({ setNotifications, onOpenChat }) {
         comments: comment || ""
       };
 
-      await axios.post("https://smart-rideshare-backend.onrender.com/api/reviews/create", payload);
+      await API.post("/reviews/create", payload);
 
       alert("Review submitted successfully!");
       setShowReviewModal(false);

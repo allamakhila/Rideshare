@@ -25,15 +25,15 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
   const fetchChatHistory = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `https://smart-rideshare-backend.onrender.com/api/chat/history/${booking.id}`,
+      const response = await API.get(
+        `/api/chat/history/${booking.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMessages(response.data);
       
       // Mark messages as read
-      await axios.put(
-        `https://smart-rideshare-backend.onrender.com/api/chat/read/${booking.id}?userId=${currentUser.id}`,
+      await API.put(
+        `/api/chat/read/${booking.id}?userId=${currentUser.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -88,8 +88,8 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
   const markAsRead = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        `https://smart-rideshare-backend.onrender.com/api/chat/read/${booking.id}?userId=${currentUser.id}`,
+      await API.put(
+        `/api/chat/read/${booking.id}?userId=${currentUser.id}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -123,7 +123,7 @@ function ChatBox({ booking, onClose, currentUser, otherUser }) {
       } else {
         // Fallback to REST API
         const token = localStorage.getItem('token');
-        await axios.post('https://smart-rideshare-backend.onrender.com/api/chat/send', message, {
+        await API.post('/api/chat/send', message, {
           headers: { Authorization: `Bearer ${token}` }
         });
         await fetchChatHistory();

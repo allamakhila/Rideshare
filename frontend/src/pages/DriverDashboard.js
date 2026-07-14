@@ -4,7 +4,7 @@ import BookingsReceived from "./BookingsReceived";
 import DriverReviews from "./DriverReviews";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
-import axios from "axios";
+import API from "../services/api";
 import { FaCar, FaBookmark, FaStar, FaBell, FaUser, FaSignOutAlt, FaRoute, FaCreditCard, FaPlusCircle, FaComment } from "react-icons/fa";
 import ChatBox from "./ChatBox"; 
 
@@ -47,7 +47,7 @@ function DriverDashboard() {
     
     setLoadingRating(true);
     try {
-      const response = await axios.get(
+      const response = await API.get(
         `https://smart-rideshare-backend.onrender.com/api/reviews/user/${loggedInUser.id}/average`
       );
       setAverageRating(response.data);
@@ -61,7 +61,7 @@ function DriverDashboard() {
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(
+      const response = await API.get(
         `https://smart-rideshare-backend.onrender.com/api/chat/unread/${loggedInUser.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );

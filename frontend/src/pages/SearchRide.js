@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API, { calculateFare } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { calculateFare } from "../services/api";
 
@@ -32,7 +32,7 @@ function SearchRide() {
   const handleSearch = async () => {
     try {
 
-      const response = await axios.get(
+      const response = await API.get(
         "https://smart-rideshare-backend.onrender.com/api/rides/all"
       );
 
@@ -71,7 +71,7 @@ function SearchRide() {
 
     try {
 
-      const response = await axios.post(
+      const response = await API.post(
         `https://smart-rideshare-backend.onrender.com/api/payment/create-order?amount=${amount}`
       );
 

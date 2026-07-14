@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../services/api";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function AdminLogin() {
@@ -129,10 +129,10 @@ function AdminLogin() {
     setError("");
 
     try {
-      const response = await axios.post(
-        "https://smart-rideshare-backend.onrender.com/api/auth/login", // Same endpoint but will check role
-        { email, password }
-      );
+      const response = await API.post("/auth/login", {
+  email,
+  password,
+});
 
       const { token, role, name, id } = response.data;
 
@@ -151,7 +151,7 @@ function AdminLogin() {
         role 
       }));
 
-      alert("Admin Login Successful!");
+     
       navigate("/admin/dashboard");
 
     } catch (error) {

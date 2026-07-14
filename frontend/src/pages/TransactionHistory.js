@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 import { FaSync, FaReceipt, FaRupeeSign, FaCalendarAlt, FaCar, FaIdCard, FaUser, FaMapMarkerAlt, FaTimes, FaEye } from "react-icons/fa";
 
 function TransactionHistory() {
@@ -266,7 +266,7 @@ function TransactionHistory() {
         url = `https://smart-rideshare-backend.onrender.com/api/payment/history/driver/${loggedInUser.email}`;
       }
 
-      const response = await axios.get(url);
+      const response = await API.get(url);
       setTransactions(response.data.reverse());
     } catch (error) {
       console.error("Error fetching transactions:", error);
