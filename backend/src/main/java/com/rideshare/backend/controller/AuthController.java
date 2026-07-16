@@ -7,7 +7,8 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+
+import com.rideshare.backend.service.ResendEmailService;
 import org.springframework.web.bind.annotation.*;
 
 import com.rideshare.backend.dto.LoginRequest;
@@ -23,7 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AuthController {
 
     @Autowired
-    private JavaMailSender mailSender;
+private ResendEmailService resendEmailService;
 
     @Autowired
     private AuthService authService;
@@ -70,12 +71,7 @@ public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
         otpStorage.put(email, otp);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("Your OTP Code");
-        message.setText("Your OTP is: " + otp);
-
-        mailSender.send(message);
+        resendEmailService.sendOtpEmail(email, otp);
 
         return ResponseEntity.ok("OTP sent successfully");
 
