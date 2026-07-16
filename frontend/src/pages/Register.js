@@ -14,8 +14,6 @@ function Register() {
     contact: "",
   });
 
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inputFocus, setInputFocus] = useState({
@@ -23,7 +21,6 @@ function Register() {
     email: false,
     password: false,
     contact: false,
-    otp: false,
   });
 
   const styles = {
@@ -227,75 +224,33 @@ function Register() {
       height: "1px",
       background: "#e2e8f0",
     },
-
-    otpSection: {
-      marginTop: "4px",
-    },
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSendOtp = async () => {
-    if (!formData.email) {
-      alert("Please enter your email first");
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      await API.post("/auth/send-otp", {
-        email: formData.email,
-      });
+  const handleRegister = async () => {
+  setIsLoading(true);
 
-      alert("OTP sent to your email!");
-      setOtpSent(true);
-    } catch (error) {
-  console.log("Full error:", error);
+  try {
+    await API.post("/auth/register", {
+  name: formData.fullName,
+  email: formData.email,
+  password: formData.password,
+  role: role,
+});
 
-  if (error.response) {
-    console.log(error.response.data);
+    alert("Registered Successfully!");
+    navigate("/login");
 
-    if (typeof error.response.data === "string") {
-      alert(error.response.data);
-    } else {
-      alert(JSON.stringify(error.response.data, null, 2));
-    }
-  } else {
-    alert(error.message);
+  } catch (error) {
+    console.log(error);
+    alert("Registration Failed");
+  } finally {
+    setIsLoading(false);
   }
-} finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyAndRegister = async () => {
-    if (!otp) {
-      alert("Please enter OTP");
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      await API.post("/auth/verify-otp", {
-        email: formData.email,
-        otp: otp,
-      });
-
-      await API.post("/auth/register", {
-        ...formData,
-        role: role,
-      });
-
-      alert("Registered Successfully!");
-      navigate("/login");
-    } catch (error) {
-      alert("Invalid OTP or Registration Failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+};
 
   const inputFields = [
     { name: "fullName", placeholder: "Full Name", icon: FaUser, type: "text" },
@@ -374,59 +329,17 @@ function Register() {
           </button>
         </div>
 
-        {!otpSent ? (
-          <button
-            style={{
-              ...styles.button,
-              ...(isLoading ? styles.buttonDisabled : {}),
-            }}
-            onClick={handleSendOtp}
-            disabled={isLoading}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            {isLoading ? "Sending OTP..." : "Send OTP"}
-          </button>
-        ) : (
-          <div style={styles.otpSection}>
-            <div style={styles.inputWrapper}>
-              <FaEnvelope style={styles.inputIcon} />
-              <input
-                name="otp"
-                placeholder="Enter OTP Code"
-                style={{
-                  ...styles.input,
-                  ...(inputFocus.otp ? styles.inputFocus : {}),
-                }}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                onFocus={() => setInputFocus({ ...inputFocus, otp: true })}
-                onBlur={() => setInputFocus({ ...inputFocus, otp: false })}
-              />
-            </div>
-
-            <button
-              style={{
-                ...styles.button,
-                ...(isLoading ? styles.buttonDisabled : {}),
-              }}
-              onClick={handleVerifyAndRegister}
-              disabled={isLoading}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              {isLoading ? "Registering..." : "Verify & Register"}
-            </button>
-          </div>
-        )}
+                <button
+          style={{
+            ...styles.button,
+            ...(isLoading ? styles.buttonDisabled : {}),
+          }}
+          onClick={handleRegister}
+          disabled={isLoading}
+        >
+          {isLoading ? "Registering..." : "Register"}
+        </button>
+          
 
         <div style={styles.divider}>
           <div style={styles.dividerLine} />

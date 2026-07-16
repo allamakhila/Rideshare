@@ -2,12 +2,10 @@ package com.rideshare.backend.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import com.rideshare.backend.service.ResendEmailService;
 import org.springframework.web.bind.annotation.*;
 
 import com.rideshare.backend.dto.LoginRequest;
@@ -23,9 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AuthController {
 
     @Autowired
-private ResendEmailService resendEmailService;
-
-    @Autowired
     private AuthService authService;
 
     @Autowired
@@ -33,8 +28,6 @@ private ResendEmailService resendEmailService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private static final Map<String, String> otpStorage = new HashMap<>();
 
     // ===== RegisterDTO =====
     public static class RegisterDTO {
@@ -54,45 +47,6 @@ private ResendEmailService resendEmailService;
 
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }
-    }
-
-    // ===== Send OTP =====
-    @PostMapping("/send-otp")
-public ResponseEntity<String> sendOtp(@RequestBody OtpRequest request) {
-
-    try {
-        String email = request.getEmail();
-
-        if (authService.userExists(email)) {
-            return ResponseEntity.badRequest().body("Account already exists");
-        }
-
-        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-        otpStorage.put(email, otp);
-
-        resendEmailService.sendOtpEmail(email, otp);
-
-        return ResponseEntity.ok("OTP sent successfully");
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.internalServerError().body(e.toString());
-    }
-}
-
-    // ===== Verify OTP =====
-    @PostMapping("/verify-otp")
-    public String verifyOtp(@RequestBody OtpRequest request) {
-
-        String email = request.getEmail();
-        String otp = request.getOtp();
-
-        if (otpStorage.containsKey(email) && otpStorage.get(email).equals(otp)) {
-            otpStorage.remove(email);
-            return "OTP verified successfully";
-        }
-
-        return "Invalid OTP";
     }
 
     // ===== Register (dynamic role) =====
