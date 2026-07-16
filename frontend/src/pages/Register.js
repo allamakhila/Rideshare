@@ -350,6 +350,12 @@ function Register() {
         <div style={styles.link} onClick={() => navigate("/login")}>
           Sign In →
         </div>
+        <div 
+  style={styles.link} 
+  onClick={() => navigate("/admin/login")}
+>
+  🔐 Admin Access →
+</div>
       </div>
 
       <style jsx>{`
