@@ -1,58 +1,34 @@
 package com.rideshare.backend.service;
 
-import okhttp3.*;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 public class ResendEmailService {
 
-    @Value("${RESEND_API_KEY}")
-    private String apiKey;
-
-    private final OkHttpClient client = new OkHttpClient();
+    @Autowired
+    private JavaMailSender mailSender;
 
     // Generic email sender
-    public void sendEmail(String toEmail, String subject, String body) throws IOException {
+    public void sendEmail(String toEmail, String subject, String body) {
 
-    MediaType mediaType = MediaType.parse("application/json");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(body);
 
-    String json = "{"
-            + "\"from\":\"RideShare <onboarding@resend.dev>\","
-            + "\"to\":[\"" + toEmail + "\"],"
-            + "\"subject\":\"" + subject + "\","
-            + "\"html\":\"<h2>" + body.replace("\n","<br>") + "</h2>\""
-            + "}";
-
-    RequestBody requestBody = RequestBody.create(json, mediaType);
-
-    Request request = new Request.Builder()
-            .url("https://api.resend.com/emails")
-            .post(requestBody)
-            .addHeader("Authorization", "Bearer " + apiKey)
-            .addHeader("Content-Type", "application/json")
-            .build();
-
-    Response response = client.newCall(request).execute();
-
-    String responseBody = response.body().string();
-
-    System.out.println("Resend Response Code: " + response.code());
-    System.out.println("Resend Response Body: " + responseBody);
-
-    if (!response.isSuccessful()) {
-        throw new RuntimeException("Failed to send email: " + responseBody);
+        mailSender.send(message);
     }
-}
 
     // OTP sender
-    public void sendOtpEmail(String toEmail, String otp) throws IOException {
+    public void sendOtpEmail(String toEmail, String otp) {
+
         sendEmail(
-    toEmail,
-    "Your OTP Code",
-    "Your OTP is: " + otp
-);
+                toEmail,
+                "Your OTP Code",
+                "Your OTP is: " + otp
+        );
     }
 }
