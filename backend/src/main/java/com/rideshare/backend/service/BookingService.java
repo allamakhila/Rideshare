@@ -11,8 +11,6 @@ import com.rideshare.backend.dto.NotificationMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.List;
 
@@ -41,18 +39,18 @@ public class BookingService {
     private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    private JavaMailSender mailSender;  // For sending emails
+private ResendEmailService resendEmailService; // For sending emails
 
     /**
      * Utility method to send dynamic email notifications
      */
     private void sendEmail(String toEmail, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);           // Dynamic recipient
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+    try {
+        resendEmailService.sendEmail(toEmail, subject, body);
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to send email", e);
     }
+}
 
     /**
      * Books a ride and calculates distance dynamically.

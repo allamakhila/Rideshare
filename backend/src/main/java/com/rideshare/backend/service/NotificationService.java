@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
@@ -26,9 +24,9 @@ public class NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
-
+    
     @Autowired
-    private JavaMailSender mailSender;  // For email notifications
+private ResendEmailService resendEmailService;// For email notifications
 
     // =============================
     // Twilio configuration
@@ -109,12 +107,12 @@ public class NotificationService {
     // Send Email Notification
     // =============================
     public void sendEmailNotification(String toEmail, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);        // Dynamic recipient
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+    try {
+        resendEmailService.sendEmail(toEmail, subject, body);
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to send email", e);
     }
+}
 
     // =============================
     // Send SMS Notification via Twilio
