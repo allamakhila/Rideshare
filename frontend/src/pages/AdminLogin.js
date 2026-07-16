@@ -206,9 +206,9 @@ function AdminLogin() {
           Login as Admin
         </button>
 
-        <div style={styles.link} onClick={() => navigate("/register")}>
-          Create Admin Account
-        </div>
+        <div style={styles.link} onClick={() => navigate("/admin/register")}>
+  Create Admin Account
+</div>
 
         <div style={styles.backLink} onClick={() => navigate("/")}>
           ← Back to User Login

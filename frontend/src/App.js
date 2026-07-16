@@ -13,6 +13,7 @@ import PassengerDashboard from "./pages/PassengerDashboard";
 // ✅ Admin Pages - ADD THESE IMPORTS
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminRegister from "./pages/AdminRegister";
 
 // ✅ Existing Pages
 import PostRide from "./pages/PostRide";
@@ -42,6 +43,7 @@ function App() {
 
         {/* ✅ ADMIN ROUTES - ADD THESE TWO LINES */}
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
 
